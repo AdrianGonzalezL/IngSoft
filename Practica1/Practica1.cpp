@@ -134,7 +134,7 @@ int main(){
 			tiempoEnemigo -= 50;
 		}	
 
-		//Comprobamos si sale el champi
+		// Comprobamos si sale el champi
 		if ((posChampi < 0) && (tiempoChampi < 0)) {
 			posChampi = (rand() % posMax + 1);
 		}
@@ -142,7 +142,7 @@ int main(){
 			tiempoChampi -= 50;
 		}
 
-		//Comprobamos que el jugador recoge el champi
+		// Comprobamos que el jugador recoge el champi
 		if (posX == posChampi) {
 			posChampi = -1;
 			tiempoChampi = TIEMPO_ALEATORIO_CHAMPI;
