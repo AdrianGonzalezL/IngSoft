@@ -1,6 +1,7 @@
 // Adrian Gonzalez Lopez
 // Practica 1 de Ingenieria de Software
 
+// Dia 1:
 // Usar printf para imprimir
 // Kbhit() te devuelve si se ha pulsado una tecla
 // \r es el retorno de carro, que si lo haces, vuelves a pintar la misma linea
@@ -10,7 +11,11 @@
 // Cada cierto tiempo aparece un enemigo, en la izquierda o la dcha, que va hacia tu posicion, y si choca contigo te quita vida. Si le da una bala, muere el.
 // Que aparezca un champiñon que te de puntos
 // Mostrar el numero de vidas que te quedan, y los puntos que tienes, en la misma linea que el mapa.
-// Añadido por mi: Cada vez que dispares el mapa se reduce, para darle dificultad.
+// Dia 2:
+// Añadir lluvia, que sea un nuevo icono que aparezca de forma aleatoria
+// Poder disparar varias balas. Usar un struct bala {int x; dir} y luego std::list <bala> balas; balas.pushback(bala1)
+// Para recorrer la lista: for (auto it = balas.begin(); it != balas.end(); it++)
+// Que aparezcan varios enemigos
 
 #pragma warning(disable:4710)
 #pragma warning(disable:4668)
@@ -19,34 +24,44 @@
 #include <tchar.h>
 #include <conio.h>
 #include <windows.h>
+#include <list>
 
-#define ESC_KEY 27
-#define J_KEY 'j'
-#define K_KEY 'k'
-#define M_KEY 'm'
-#define N_KEY 'n'
-#define TIEMPO_ALEATORIO_ENEMIGO (rand() % 3 + 1) * 1000
-#define TIEMPO_ALEATORIO_CHAMPI  (rand() % 7 + 1) * 1000
+#define ESC_KEY                   27
+#define A_KEY                     'a'
+#define D_KEY                     'd'
+#define J_KEY                     'j'
+#define L_KEY                     'l'
+#define TIEMPO_ALEATORIO_ENEMIGO  (rand() % 3 + 1) * 1000
+#define TIEMPO_ALEATORIO_CHAMPI   (rand() % 7 + 1) * 1000
+#define TAMAÑO_MINIMO_MAPA        5
+#define ANCHO_CONSOLA             1000
+#define ALTO_CONSOLA              400
 
-enum dir{
-	IZQ = true,
-	DCHA = false
+using namespace std;
+
+enum dir {
+	IZQ,
+	DCHA,
+	NONE
 };
 
-void enemigoAlcanzado(int *posBala, int *posEnemigo, int *puntuacion, int *tiempoEnemigo, int *posMax, int *posX, int *posChampi) {
-	if ((*posBala != -1) && (*posEnemigo != -1) && (*posBala == *posEnemigo)) {
-		*posEnemigo = -1;
-		*posBala = -1;
-		*puntuacion += 1;
-		*tiempoEnemigo = TIEMPO_ALEATORIO_ENEMIGO;
-		if (*posMax > 5) {
-			*posMax -= 2;
-			while (*posX > *posMax) {
-				*posX -= 1;
-			}
-			while (*posChampi > *posMax) {
-				*posChampi -= 1;
-			}
+struct bala {
+	int pos;
+	dir direccion;
+
+	bala(int pos, dir direccion) {
+		this->pos       = pos;
+		this->direccion = direccion;
+	}
+};
+
+void enemigoAlcanzado(list<bala> balas, int *posEnemigo, int *puntuacion, int *tiempoEnemigo) {
+	for (auto it = balas.begin(); it != balas.end(); it++) {
+		if ((it->pos != -1) && (*posEnemigo != -1) && (it->pos == *posEnemigo)) {
+			it->pos = -1;
+			*posEnemigo = -1;
+			*puntuacion += 1;
+			*tiempoEnemigo = TIEMPO_ALEATORIO_ENEMIGO;
 		}
 	}
 }
@@ -59,48 +74,75 @@ void jugadorAlcanzado(const int posX, int *posEnemigo, int *vidas, int *tiempoEn
 	}
 }
 
+dir hayBala(int pos, list<bala> balas) {
+	dir bala = dir::NONE;
+	for (auto it = balas.begin(); it != balas.end(); it++) {
+		if (it->pos == pos) {
+			bala = it->direccion;
+		}
+	}
+	return bala;
+}
+
 int main(){
 
 	// Modificamos la dimension de la consola
 	HWND console = GetConsoleWindow();
 	RECT r;
 	GetWindowRect(console, &r);
-	MoveWindow(console, r.left, r.top, 1000, 400, TRUE); 
+	MoveWindow(console, r.left, r.top, ANCHO_CONSOLA, ALTO_CONSOLA, TRUE); 
+
+	//Pintamos las instrucciones
+	printf("Movimiento: A y D. Disparo: J y K. Salir: ESC.\n\n\n");
 
 	// Si es negativa la posicion: no existen.
-	int	 posMax         = 40;	
-	int	 posX           = 20;
-	int  posBala        = -1;
-	bool dirBala        = dir::DCHA;
-	bool escKeyPressed  = false;
-	int  tiempoEnemigo  = TIEMPO_ALEATORIO_ENEMIGO;
-	int  posEnemigo     = -1;
-	bool dirEnemigo     = dir::DCHA;
-	int  puntuacion     = 0;
-	int  vidas          = 3;
-	int  posChampi      = -1;
-	int  tiempoChampi   = TIEMPO_ALEATORIO_CHAMPI;
+	int	       posMax         = 40;	
+	int	       posX           = 20;
+	bool       escKeyPressed  = false;
+	int        tiempoEnemigo  = TIEMPO_ALEATORIO_ENEMIGO;
+	int        posEnemigo     = -1;
+	dir        dirEnemigo     = dir::DCHA;
+	int        puntuacion     = 0;
+	int        vidas          = 3;
+	int        posChampi      = -1;
+	int        tiempoChampi   = TIEMPO_ALEATORIO_CHAMPI;
+	int        NumMaxBalas    = 3;
+	list<bala> balas;
 		
 	//Bucle del juego
 	while ((!escKeyPressed) && (vidas > 0)) {
-		// Si hay bala, la movemos una posicion
-		if ((posBala > 0) && (posBala < posMax)) {
-			if (dirBala) {
-				posBala--;
+
+		// Comprobamos que la bala mata al enemigo
+		enemigoAlcanzado(balas, &posEnemigo, &puntuacion, &tiempoEnemigo);
+
+		// Si hay balas, las movemos una posicion, y si se salen del mapa, las eliminamos de la lista
+		auto it = balas.begin();
+		while (it != balas.end()) {
+			if (it->direccion == dir::IZQ) {
+				it->pos--;
+				if (it->pos == 0) {
+					it = balas.erase(it);
+				}
+				else {
+					it++;
+				}
 			}
 			else {
-				posBala++;
+				it->pos++;
+				if (it->pos > posMax) {
+					it = balas.erase(it);
+				}
+				else {
+					it++;
+				}
 			}
 		}
-		else {
-			posBala = -1;
-		}
+
+		// Comprobamos que la bala mata al enemigo
+		enemigoAlcanzado(balas, &posEnemigo, &puntuacion, &tiempoEnemigo);
 
 		// Comprobamos que el enemigo mata al jugador
 		jugadorAlcanzado(posX, &posEnemigo, &vidas, &tiempoEnemigo);
-
-		// Comprobamos que la bala mata al enemigo
-		enemigoAlcanzado(&posBala, &posEnemigo, &puntuacion, &tiempoEnemigo, &posMax, &posX, &posChampi);
 
 		// Si esta el enemigo, avanza
 		if (posEnemigo > 0) {
@@ -113,7 +155,7 @@ int main(){
 		}
 
 		// Comprobamos que la bala mata al enemigo
-		enemigoAlcanzado(&posBala, &posEnemigo, &puntuacion, &tiempoEnemigo, &posMax, &posX, &posChampi);
+		enemigoAlcanzado(balas, &posEnemigo, &puntuacion, &tiempoEnemigo);
 
 		// Comprobamos que el enemigo mata al jugador
 		jugadorAlcanzado(posX, &posEnemigo, &vidas, &tiempoEnemigo);
@@ -155,26 +197,26 @@ int main(){
 			case ESC_KEY:
 				escKeyPressed = true;
 				break;
-			case J_KEY:
+			case A_KEY:
 				if (posX > 1) {
 					posX--;
 				}
 				break;
-			case K_KEY:
+			case D_KEY:
 				if (posX < posMax) {
 					posX++;
 				}
 				break;
-			case M_KEY:
-				if (posBala < 0) {
-					posBala = posX + 1;
-					dirBala = dir::DCHA;
-				}				
+			case L_KEY:
+				if (balas.size() < NumMaxBalas) {
+					bala bala1 (posX + 1, dir::DCHA);
+					balas.push_back(bala1);
+				}			
 				break;
-			case N_KEY:
-				if (posBala < 0) {
-					posBala = posX - 1;
-					dirBala = dir::IZQ;
+			case J_KEY:
+				if (balas.size() < NumMaxBalas) {
+					bala bala1(posX - 1, dir::IZQ);
+					balas.push_back(bala1);
 				}
 				break;
 			}
@@ -183,16 +225,9 @@ int main(){
 		// Pintamos el mapa
 		printf("\r");		
 		for (int i = 1; i <= posMax; i++) {
+			dir dirBala = hayBala(i, balas);
 			if (i == posX) {
 				printf("X");
-			}
-			else if (i == posBala) {
-				if (dirBala) {
-					printf("<");
-				}
-				else {
-					printf(">");
-				}
 			}
 			else if (i == posEnemigo) {
 				printf("@");
@@ -200,13 +235,19 @@ int main(){
 			else if (i == posChampi) {
 				printf("T");
 			}
+			else if (dirBala == dir::DCHA) {
+				printf(">");
+			}
+			else if (dirBala == dir::IZQ) {
+				printf("<");
+			}
 			else {
 				printf("_");
-			}			
+			}		
 		}
 
 		// Pintamos las vidas y la puntuacion
-		printf("     vidas: %i, puntuacion: %i. Mov: J/K. Disparo: N/M. Salir ESC.", vidas, puntuacion);
+		printf("     vidas: %i, puntuacion: %i", vidas, puntuacion);
 		Sleep(50);
 	}
 
