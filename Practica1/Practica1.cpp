@@ -266,7 +266,7 @@ int main(){
 		Sleep(50);
 	}
 
-	// Fin de la partida
+	// Fin de la partida.
 	printf("\n\nPuntuacion final : %i\n", score);
 	printf("Pulse intro para salir");
 	getchar();
