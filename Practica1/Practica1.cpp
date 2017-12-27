@@ -196,7 +196,7 @@ int main()
 	int           RANDOM_MUSHROOM_TIME = (rand() % 7 + 1) * 1000;
 	int           MAX_BULLETS          = 3;
 	int           MAX_MAP_POS          = 40;
-    int           MAX_ENEMIES          = 3;
+	int           MAX_ENEMIES          = 3;
 	bool          escKeyPressed        = false;
 	int           playerPos            = 20;
 	int           score                = 0;
