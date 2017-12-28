@@ -67,6 +67,7 @@ struct object
 	}
 };
 
+
 // Funcion que determina que enemigos han sido alcanzados en un frame del juego
 void enemyReached(list<object>& bullets, list<object>& enemies, int& score, int& enemyTime, int RANDOM_ENEMY_TIME) 
 {
