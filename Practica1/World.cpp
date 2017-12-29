@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Mushroom.h"
 #pragma warning(disable:4820)
 
 World::World()
@@ -11,6 +12,8 @@ World::World()
 	for (int i = 0; i < m_MAX_MAP; i++)	{ m_map.push_back(nullptr);	}
 	m_map[playerPos] = p;
 	m_playerPos = playerPos;
+	Mushroom* m = new Mushroom();
+	m_mushroomP = m;
 }
 
 void World::movePlayer(Object::dir dir)
@@ -29,12 +32,17 @@ void World::movePlayer(Object::dir dir)
 			m_enemies -= 1;
 			m_enemyTime = m_RANDOM_ENEMY_TIME;
 		}
-		// A una casilla con champiñon
-		// A una casilla con una gota
 		// Ponemos al jugador en la nueva casilla
 		m_map[m_playerPos + pos] = m_map[m_playerPos];
 		m_map[m_playerPos] = nullptr;
 		(dir == Object::dir::LEFT) ? m_playerPos-- : m_playerPos++;
+		// Comprobamos si ha recogido el champiñon
+		if (m_playerPos == m_posMushroom)
+		{
+			m_mushroomTime = m_RANDOM_MUSHROOM_TIME;
+			m_showMushroom = false;
+			m_score += m_mushroomP->m_score;
+		}
 	}
 }
 
@@ -228,12 +236,27 @@ void World::moveEnemy(int posEnemy)
 	}
 }
 
+void World::showMushroom()
+{
+	if (m_mushroomTime < 0 && !m_showMushroom)
+	{
+		m_showMushroom = true;
+		m_posMushroom = rand() % m_MAX_MAP;
+	}
+	else
+	{
+		m_mushroomTime -= 50;
+	}
+}
+
 void World::printWorld()
 {
 	for (int i = 0; i < m_MAX_MAP; i++)
 	{
-		if (m_map[i] != nullptr) { m_map[i]->printObject(); }
-		else { printf("_"); }
+		// Los enemigos se mostraran por encima del champiñon y las gotas
+		if      (m_map[i] != nullptr)                   { m_map[i]->printObject(); }
+		else if (m_showMushroom && i == m_posMushroom)  { m_mushroomP->printObject(); }
+		else                                            { printf("_"); }
 	}
 }
 

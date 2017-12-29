@@ -185,7 +185,10 @@ int main()
 
 	//Pintamos las instrucciones
 	printf("\n\n");
-	printf("Movimiento: A y D. Disparo: J y L. Salir: ESC.\nSolo puedes disparar tres balas de forma consecutiva.\n\n");
+	printf("Movimiento: A y D. Disparo: J y L. Salir: ESC.\n\n");
+	printf("Solo puedes disparar tres balas de forma consecutiva. Cada muerte es 1 punto.\n");
+	printf("Solo habra tres enemigos de forma concurrente.\n");
+	printf("Coge el chamiñon para ganar 5 puntos.\n\n");
 	printf("Pulse intro para iniciar la partida.\n");
 	getchar();
 	printf("\n\n");
@@ -218,11 +221,8 @@ int main()
 		// Creamos enemigos nuevos si toca
 		world.createEnemy();
 
-		// Comprobamos si sale el champiñon
-		//createMushroom(mushroomPos, mushroomTime, MAX_MAP_POS);
-
-		// Comprobamos que el jugador recoge el champiñon
-		//mushroomReached(playerPos, mushroomPos, mushroomTime, score, RANDOM_MUSHROOM_TIME);
+		// Aparece el champiñon si toca
+		world.showMushroom();
 
 		// Pintamos el mapa
 		printf("\r");		
