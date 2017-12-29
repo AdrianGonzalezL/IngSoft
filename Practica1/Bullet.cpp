@@ -3,10 +3,10 @@
 #include <stdlib.h>  
 #pragma warning(disable:4820)
 
-Bullet::Bullet()
+Bullet::Bullet(dir dir)
 {
 	m_type = BULLET;
-	(rand() % 2 == 0) ? m_dir = RIGHT : m_dir = LEFT;
+	m_dir  = dir;
 }
 
 void Bullet::printObject()

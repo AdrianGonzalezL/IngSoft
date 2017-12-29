@@ -204,19 +204,13 @@ int main()
 				case ESC_KEY: world.m_escKeyPressed = true;                                     break;
 				case A_KEY:   world.movePlayer(Object::dir::LEFT);                              break;
 				case D_KEY:   world.movePlayer(Object::dir::RIGHT);                             break;
-				//case L_KEY: if (bullets.size() < static_cast<unsigned int>(MAX_BULLETS)) { bullets.push_back(Object(playerPos + 1, dir::RIGHT)); } break;
-				//case J_KEY: if (bullets.size() < static_cast<unsigned int>(MAX_BULLETS)) { bullets.push_back(Object(playerPos - 1, dir::LEFT)); }  break;
+				case L_KEY:   world.createBullet(Object::dir::RIGHT);                           break;
+				case J_KEY:   world.createBullet(Object::dir::LEFT);                            break;
 			}
 		}
 
-		// Comprobamos que la bala mata al enemigo
-		//enemyReached(bullets, enemies, score, enemyTime, RANDOM_ENEMY_TIME);
-
-		// Si hay balas, las movemos una posicion, y si se salen del mapa, las eliminamos de la lista
-		//moveObjects(bullets, MAX_MAP_POS);
-
-		// Comprobamos que la bala mata al enemigo
-		//enemyReached(bullets, enemies, score, enemyTime, RANDOM_ENEMY_TIME);
+		// Movemos las balas
+		world.moveBullets();
 
 		// Comprobamos que el enemigo mata al jugador
 		//playerReached(playerPos, enemies, lives, enemyTime, RANDOM_ENEMY_TIME);
@@ -251,6 +245,7 @@ int main()
 	// Fin de la partida.
 	printf("\n\nPuntuacion final : %i\n", world.m_score);
 	printf("Pulse intro para salir");
+	world.deleteWorld();
 	getchar();
     return 0;
 }

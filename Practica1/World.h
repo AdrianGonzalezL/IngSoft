@@ -25,5 +25,9 @@ struct World
 
 	World();
 	void movePlayer(Object::dir dir);
+	void createBullet(Object::dir dir);
+	void moveBullets();
+	void moveBullet(int posBullet);
 	void printWorld();
+	void deleteWorld();
 };

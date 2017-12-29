@@ -5,6 +5,6 @@ struct Bullet : public Object
 {
 	dir m_dir;
 
-	Bullet();
+	Bullet(dir dir);
 	void printObject();
 };
