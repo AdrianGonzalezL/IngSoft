@@ -3,10 +3,10 @@
 #include <stdlib.h>  
 #pragma warning(disable:4820)
 
-Enemy::Enemy()
+Enemy::Enemy(Object::dir dir)
 {
 	m_type = ENEMY;
-	(rand() % 2 == 0) ? m_dir = RIGHT : m_dir = LEFT;
+	m_dir  = dir;
 }
 
 void Enemy::printObject()

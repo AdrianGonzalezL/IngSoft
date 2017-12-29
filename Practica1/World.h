@@ -28,6 +28,9 @@ struct World
 	void createBullet(Object::dir dir);
 	void moveBullets();
 	void moveBullet(int posBullet);
+	void createEnemy();
+	void moveEnemies();
+	void moveEnemy(int posEnemy);
 	void printWorld();
 	void deleteWorld();
 };

@@ -212,20 +212,11 @@ int main()
 		// Movemos las balas
 		world.moveBullets();
 
-		// Comprobamos que el enemigo mata al jugador
-		//playerReached(playerPos, enemies, lives, enemyTime, RANDOM_ENEMY_TIME);
+		// Movemos los enemigos
+		world.moveEnemies();
 
-		// Si esta el enemigo, avanza, si esta fuera del mapa, se elimina
-		//moveObjects(enemies, MAX_MAP_POS);
-
-		// Comprobamos si aparece el enemigo y que no haya otro enemigo en la posicion en la que va a aparecer
-		//createEnemies(enemies, enemyTime, MAX_ENEMIES, RANDOM_ENEMY_TIME, MAX_MAP_POS);
-
-		// Comprobamos que la bala mata al enemigo
-		//enemyReached(bullets, enemies, score, enemyTime, RANDOM_ENEMY_TIME);
-
-		// Comprobamos que el enemigo mata al jugador
-		//playerReached(playerPos, enemies, lives, enemyTime, RANDOM_ENEMY_TIME);
+		// Creamos enemigos nuevos si toca
+		world.createEnemy();
 
 		// Comprobamos si sale el champiñon
 		//createMushroom(mushroomPos, mushroomTime, MAX_MAP_POS);

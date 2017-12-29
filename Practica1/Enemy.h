@@ -5,6 +5,6 @@ struct Enemy : public Object
 {
 	dir m_dir;
 
-	Enemy();
+	Enemy(Object::dir dir);
 	void printObject();
 };
