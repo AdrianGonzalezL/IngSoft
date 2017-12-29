@@ -185,8 +185,8 @@ int main()
 
 	//Pintamos las instrucciones
 	printf("\n\n");
-	printf("Movimiento: A y D. Disparo: J y L. Salir: ESC.\n\n");
-	printf("Pulse intro para iniciar la partida\n");
+	printf("Movimiento: A y D. Disparo: J y L. Salir: ESC.\nSolo puedes disparar tres balas de forma consecutiva.\n\n");
+	printf("Pulse intro para iniciar la partida.\n");
 	getchar();
 	printf("\n\n");
 
@@ -201,11 +201,11 @@ int main()
 		{
 			switch (_getch()) 
 			{
-				case ESC_KEY: world.m_escKeyPressed = true;                                     break;
-				case A_KEY:   world.movePlayer(Object::dir::LEFT);                              break;
-				case D_KEY:   world.movePlayer(Object::dir::RIGHT);                             break;
-				case L_KEY:   world.createBullet(Object::dir::RIGHT);                           break;
-				case J_KEY:   world.createBullet(Object::dir::LEFT);                            break;
+				case ESC_KEY: world.m_escKeyPressed = true;           break;
+				case A_KEY:   world.movePlayer(Object::dir::LEFT);    break;
+				case D_KEY:   world.movePlayer(Object::dir::RIGHT);   break;
+				case L_KEY:   world.createBullet(Object::dir::RIGHT); break;
+				case J_KEY:   world.createBullet(Object::dir::LEFT);  break;
 			}
 		}
 
@@ -238,13 +238,13 @@ int main()
 		world.printWorld();
 
 		// Pintamos las vidas y la puntuacion
-		printf("     vidas: %i, puntuacion: %i", world.m_lives, world.m_score);
+		printf("     vidas: %i, puntuacion: %i.", world.m_lives, world.m_score);
 		Sleep(50);
 	}
 
 	// Fin de la partida.
-	printf("\n\nPuntuacion final : %i\n", world.m_score);
-	printf("Pulse intro para salir");
+	printf("\n\nPuntuacion final : %i.\n", world.m_score);
+	printf("Pulse intro para salir.");
 	world.deleteWorld();
 	getchar();
     return 0;

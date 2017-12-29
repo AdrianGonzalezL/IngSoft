@@ -42,7 +42,7 @@ void World::createBullet(Object::dir dir)
 	int pos;
 	(dir == Object::dir::LEFT) ? pos = -1 : pos = 1;
 
-	if ((dir == Object::dir::LEFT && m_playerPos > 0) || ((dir == Object::dir::RIGHT && m_playerPos < m_MAX_MAP - 1)))
+	if (((dir == Object::dir::LEFT && m_playerPos > 0) || (dir == Object::dir::RIGHT && m_playerPos < m_MAX_MAP - 1)) && (m_bullets < m_MAX_BULLETS))
 	{
 		// Comprobamos si hay un enemigo en la posicion a crear la bala
 		if (m_map[m_playerPos + pos] != nullptr && m_map[m_playerPos + pos]->m_type == Object::type::ENEMY)
@@ -57,6 +57,7 @@ void World::createBullet(Object::dir dir)
 		{
 			Bullet* b = new Bullet(dir);
 			m_map[m_playerPos + pos] = b;
+			m_bullets++;
 		}
 	}
 }
@@ -89,6 +90,7 @@ void World::moveBullet(int posBullet)
 	{
 		delete m_map[posBullet];
 		m_map[posBullet] = nullptr;
+		m_bullets--;
 	}
 	else
 	{
@@ -101,6 +103,7 @@ void World::moveBullet(int posBullet)
 			m_enemyTime = m_RANDOM_ENEMY_TIME;
 			delete m_map[posBullet];
 			m_map[posBullet] = nullptr;
+			m_bullets--;
 		}
 		// Si no hay enemigo movemos la bala
 		else
