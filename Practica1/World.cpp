@@ -249,6 +249,37 @@ void World::showMushroom()
 	}
 }
 
+void World::createDrop()
+{
+	if (rand() % 10 == 0)
+	{
+		bool usedValue = true;
+		int pos = 0;
+		while (usedValue)
+		{
+			usedValue = false;
+			pos = rand() % m_MAX_MAP;
+			for (auto it = m_drops.begin(); it != m_drops.end(); it++)
+			{
+				if ((*it)->m_pos == pos && !usedValue) { usedValue = true; }
+			}
+		}
+		Drop* d = new Drop(pos);
+		m_drops.push_back(d);
+	}
+}
+
+void World::updateDrops()
+{
+	auto it = m_drops.begin();
+	while (it != m_drops.end())
+	{
+		(*it)->update();
+		if ((*it)->m_timer < 0) { it = m_drops.erase(it); }
+		else                    { it++; }
+	}
+}
+
 void World::printWorld()
 {
 	for (int i = 0; i < m_MAX_MAP; i++)
@@ -256,7 +287,20 @@ void World::printWorld()
 		// Los enemigos se mostraran por encima del champiñon y las gotas
 		if      (m_map[i] != nullptr)                   { m_map[i]->printObject(); }
 		else if (m_showMushroom && i == m_posMushroom)  { m_mushroomP->printObject(); }
-		else                                            { printf("_"); }
+		else
+		{
+			bool gota = false;
+			for (auto it = m_drops.begin(); it != m_drops.end(); it++)
+			{
+				if ((*it)->m_pos == i) 
+				{
+					(*it)->printObject();
+					gota = true;
+				}
+
+			}
+			if (!gota){ printf("_"); }
+		}
 	}
 }
 

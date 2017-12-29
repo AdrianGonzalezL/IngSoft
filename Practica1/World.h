@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Mushroom.h"
+#include "Drop.h"
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,7 @@ struct World
 	int              m_posMushroom          = 0;
 	Mushroom*        m_mushroomP            = nullptr;
 	bool             m_showMushroom         = false;
+	vector<Drop*>    m_drops;
 
 	World();
 	void movePlayer(Object::dir dir);
@@ -34,6 +36,8 @@ struct World
 	void moveEnemies();
 	void moveEnemy(int posEnemy);
 	void showMushroom();
+	void createDrop();
+	void updateDrops();
 	void printWorld();
 	void deleteWorld();
 };
