@@ -6,35 +6,49 @@
 
 using namespace std;
 
+// Clase que ademas de ser el gestor meteorologico, gestiona todos los elementos que se muestran por la pantalla.
+// Esta clase contiene el mapa y las diferentes variables que controlan el estado de la partida.
 struct World
 {
-	int              m_RANDOM_ENEMY_TIME    = (rand() % 4 + 1) * 100;
-	int              m_RANDOM_MUSHROOM_TIME = (rand() % 7 + 1) * 1000;
-	int              m_MAX_BULLETS          = 3;
-	static const int m_MAX_MAP              = 40;
-	int              m_MAX_ENEMIES          = 3;
-	bool             m_escKeyPressed        = false;
-	int              m_score                = 0;
-	int              m_enemyTime            = m_RANDOM_ENEMY_TIME;
-	int              m_mushroomTime         = m_RANDOM_MUSHROOM_TIME;
-	int              m_bullets              = 0;
-	int              m_enemies              = 0;
-	int	             m_lives                = 3;
-	int              m_playerPos            = 0;
+	unsigned int     m_RANDOM_ENEMY_TIME;
+	unsigned int     m_RANDOM_MUSHROOM_TIME;
+	unsigned int     m_MAX_BULLETS;
+	unsigned int     m_MAX_MAP;
+	unsigned int     m_MAX_ENEMIES;
+	bool             m_escKeyPressed;
+	int              m_score;
+	int              m_enemyTime;
+	int              m_mushroomTime;
+	unsigned int     m_bullets;
+	unsigned int     m_enemies;
+	unsigned int     m_lives;
+	unsigned int     m_playerPos;
 	vector<Object*>  m_map;
-	int              m_posMushroom          = 0;
-	Mushroom*        m_mushroomP            = nullptr;
-	bool             m_showMushroom         = false;
+	unsigned int     m_mushroomPos;
+	int              m_mushroomScore;
+	Mushroom*        m_mushroomP;
+	bool             m_showMushroom;
 	vector<Drop*>    m_drops;
+	unsigned int     m_dropTimeToFall;
 
-	World();
+	World(
+		unsigned int     RANDOM_ENEMY_TIME,
+		unsigned int     RANDOM_MUSHROOM_TIME,
+		unsigned int     MAX_BULLETS,
+		unsigned int     MAX_MAP,
+		unsigned int     MAX_ENEMIES,
+	    int              score,
+		unsigned int     lives,
+	    int              mushroomScore,
+	    unsigned int     dropTimeToFall);
+
 	void movePlayer(Object::dir dir);
 	void createBullet(Object::dir dir);
 	void moveBullets();
-	void moveBullet(int posBullet);
+	void moveBullet(unsigned int posBullet);
 	void createEnemy();
 	void moveEnemies();
-	void moveEnemy(int posEnemy);
+	void moveEnemy(unsigned int posEnemy);
 	void showMushroom();
 	void createDrop();
 	void updateDrops();

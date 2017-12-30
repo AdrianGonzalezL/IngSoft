@@ -1,10 +1,11 @@
 #include "Mushroom.h"
 #include <stdio.h>
-#pragma warning(disable:4820)
 
-Mushroom::Mushroom()
+// Implementacion de la clase champiñon.
+Mushroom::Mushroom(int score)
 {
-	m_type = MUSHROOM;
+	m_type  = MUSHROOM;
+	m_score = score;
 }
 
 void Mushroom::printObject()

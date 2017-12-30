@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include <stdio.h>
 #include <stdlib.h>  
-#pragma warning(disable:4820)
 
+// Implementacion de la clase enemigo.
 Enemy::Enemy(Object::dir dir)
 {
 	m_type = ENEMY;

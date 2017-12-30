@@ -10,6 +10,9 @@
 #pragma warning(disable:5027)
 #pragma warning(disable:4774)
 
+// Clase objeto de la que heredan los elementos a mostrar por pantalla.
+// Solo contiene una variable type, para diferenciarlos unos de otros
+// y el metodo printObject, que lo tienen que implementar todos, para poder ser pintados.
 struct Object
 {
 	enum dir

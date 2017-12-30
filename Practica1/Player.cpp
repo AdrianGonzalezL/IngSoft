@@ -1,7 +1,7 @@
 #include "Player.h"
 #include <stdio.h> 
-#pragma warning(disable:4820)
 
+// Implementacion de la clase jugador.
 Player::Player()
 {
 	m_type = PLAYER;

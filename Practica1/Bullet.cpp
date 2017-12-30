@@ -1,8 +1,8 @@
 #include "Bullet.h"
 #include <stdio.h>
 #include <stdlib.h>  
-#pragma warning(disable:4820)
 
+// Implementacion de la clase bala.
 Bullet::Bullet(dir dir)
 {
 	m_type = BULLET;

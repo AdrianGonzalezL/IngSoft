@@ -1,10 +1,11 @@
 #pragma once
 #include "Object.h"
 
+// Clase para crear champiñones.
 struct Mushroom : public Object
 {
-	int m_score = 5;
+	int m_score;
 
-	Mushroom();
+	Mushroom(int score);
 	void printObject();
 };

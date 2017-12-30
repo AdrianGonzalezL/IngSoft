@@ -17,6 +17,9 @@
 #include <conio.h>
 #include <windows.h>
 #include <list>
+// Herramienta gratuita para detectar memory leaks. 
+// Para usarla, hay que instalar en el pc a compilar el "Visual Leak Detector" y descomentar esta linea
+//#include <vld.h>
 
 using namespace std;
 
@@ -28,9 +31,19 @@ using namespace std;
 
 int main()
 {
-	// Si es negativa la posicion de un objeto: no existe.	
-	int CONSOLE_WIDTH  = 1000;
-	int CONSOLE_HEIGHT = 400;
+	// Configuracion de la partida
+	unsigned int     RANDOM_ENEMY_TIME    = (rand() % 4 + 1) * 100;
+	unsigned int     RANDOM_MUSHROOM_TIME = (rand() % 7 + 1) * 1000;
+	unsigned int     MAX_BULLETS          = 3;
+	unsigned int     MAX_MAP              = 40;
+	unsigned int     MAX_ENEMIES          = 3;
+	int              score                = 0;
+	int	             lives                = 3;
+	int              mushroomScore        = 5;
+	unsigned int     dropTimeToFall       = 1000;
+	// Medidas de la ventana de la consola
+	int              CONSOLE_WIDTH        = 600;
+	int              CONSOLE_HEIGHT       = 400;
 
 	// Modificamos la dimension de la consola
 	HWND console = GetConsoleWindow();
@@ -43,14 +56,22 @@ int main()
 	printf("Movimiento: A y D. Disparo: J y L. Salir: ESC.\n\n");
 	printf("Solo puedes disparar tres balas de forma consecutiva. Cada muerte es 1 punto.\n");
 	printf("Solo habra tres enemigos de forma concurrente.\n");
-	printf("Coge el chamiñon para ganar 5 puntos.\n\n");
+	printf("Coge el champinon para ganar 5 puntos.\n\n");
 	printf("Pulse intro para iniciar la partida.\n");
 	getchar();
 	printf("\n\n");
 
 	// Creamos una instancia de World
-	// La clase World indorpora tanto la gestion meteorologica, como la gestion de los objetos que afectan a la jugabilidad
-	World world;
+	World world(
+		RANDOM_ENEMY_TIME,
+	    RANDOM_MUSHROOM_TIME,
+	    MAX_BULLETS,
+	    MAX_MAP,
+	    MAX_ENEMIES,
+	    score,
+	    lives,
+	    mushroomScore,
+	    dropTimeToFall);
 
 	// Bucle del juego
 	while ((!world.m_escKeyPressed) && (world.m_lives > 0)) 

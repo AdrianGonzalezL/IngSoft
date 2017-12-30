@@ -3,16 +3,45 @@
 #include "Bullet.h"
 #include "Enemy.h"
 #include "Mushroom.h"
-#pragma warning(disable:4820)
 
-World::World()
+// Implementacion de la clase mundo.
+World::World(
+	unsigned int     RANDOM_ENEMY_TIME,
+	unsigned int     RANDOM_MUSHROOM_TIME,
+	unsigned int     MAX_BULLETS,
+	unsigned int     MAX_MAP,
+	unsigned int     MAX_ENEMIES,
+	int              score,
+	unsigned int     lives,
+	int              mushroomScore,
+	unsigned int     dropTimeToFall)
 {
+	m_RANDOM_ENEMY_TIME    = RANDOM_ENEMY_TIME;
+	m_RANDOM_MUSHROOM_TIME = RANDOM_MUSHROOM_TIME;
+	m_MAX_BULLETS          = MAX_BULLETS;
+	m_MAX_MAP              = MAX_MAP;
+	m_MAX_ENEMIES          = MAX_ENEMIES;	
+	m_score                = score;	
+	m_lives                = lives;	
+	m_mushroomScore        = mushroomScore;	
+	m_dropTimeToFall       = dropTimeToFall;
+	m_enemyTime            = m_RANDOM_ENEMY_TIME;
+	m_mushroomTime         = m_RANDOM_MUSHROOM_TIME;
+	m_escKeyPressed        = false;
+	m_showMushroom         = false;
+	m_mushroomPos          = 0;
+	m_bullets              = 0;
+	m_enemies              = 0;
+
 	Player* p = new Player();
 	int playerPos = m_MAX_MAP / 2;
-	for (int i = 0; i < m_MAX_MAP; i++)	{ m_map.push_back(nullptr);	}
+	for (size_t i = 0; i < m_MAX_MAP; i++)
+	{
+		m_map.push_back(nullptr);
+	}
 	m_map[playerPos] = p;
 	m_playerPos = playerPos;
-	Mushroom* m = new Mushroom();
+	Mushroom* m = new Mushroom(m_mushroomScore);
 	m_mushroomP = m;
 }
 
@@ -37,7 +66,7 @@ void World::movePlayer(Object::dir dir)
 		m_map[m_playerPos] = nullptr;
 		(dir == Object::dir::LEFT) ? m_playerPos-- : m_playerPos++;
 		// Comprobamos si ha recogido el champiñon
-		if (m_playerPos == m_posMushroom)
+		if (m_playerPos == m_mushroomPos)
 		{
 			m_mushroomTime = m_RANDOM_MUSHROOM_TIME;
 			m_showMushroom = false;
@@ -74,23 +103,17 @@ void World::createBullet(Object::dir dir)
 
 void World::moveBullets()
 {
-	for (int i = 0; i < m_playerPos; i++)
+	for (size_t i = 0; i < m_playerPos; i++)
 	{
-		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::BULLET)
-		{
-			moveBullet(i);
-		}
+		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::BULLET) { moveBullet(i); }
 	}
-	for (int i = m_MAX_MAP - 1; i > m_playerPos; i--)
+	for (size_t i = m_MAX_MAP - 1; i > m_playerPos; i--)
 	{
-		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::BULLET)
-		{
-			moveBullet(i);
-		}
+		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::BULLET) { moveBullet(i); }
 	}
 }
 
-void World::moveBullet(int posBullet)
+void World::moveBullet(unsigned int posBullet)
 {
 	int posToMove;
 	(static_cast<Bullet*>(m_map[posBullet])->m_dir == Object::dir::LEFT) ? posToMove = -1 : posToMove = 1;
@@ -176,31 +199,22 @@ void World::createEnemy()
 		}
 	}
 	// Si aun no es momento de crear enemigo, se reduce el timer de creacion de enemigos
-	else 
-	{
-		m_enemyTime -= 50;
-	}
+	else { m_enemyTime -= 50; }
 }
 
 void World::moveEnemies()
 {
-	for (int i = m_playerPos - 1; i >= 0; i--)
+	for (size_t i = m_playerPos - 1; i < UINT_MAX; i--)
 	{
-		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::ENEMY)
-		{
-			moveEnemy(i);
-		}
+		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::ENEMY) { moveEnemy(i); }
 	}
-	for (int i = m_playerPos + 1; i < m_MAX_MAP; i++)
+	for (size_t i = m_playerPos + 1; i < m_MAX_MAP; i++)
 	{
-		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::ENEMY)
-		{
-			moveEnemy(i);
-		}
+		if (m_map[i] != nullptr && m_map[i]->m_type == Object::type::ENEMY) { moveEnemy(i); }
 	}
 }
 
-void World::moveEnemy(int posEnemy)
+void World::moveEnemy(unsigned int posEnemy)
 {
 	int posToMove;
 	(static_cast<Enemy*>(m_map[posEnemy])->m_dir == Object::dir::LEFT) ? posToMove = -1 : posToMove = 1;
@@ -231,7 +245,7 @@ void World::moveEnemy(int posEnemy)
 		else
 		{
 			m_map[posEnemy + posToMove] = m_map[posEnemy];
-			m_map[posEnemy]             = nullptr;
+			m_map[posEnemy] = nullptr;
 		}
 	}
 }
@@ -241,20 +255,18 @@ void World::showMushroom()
 	if (m_mushroomTime < 0 && !m_showMushroom)
 	{
 		m_showMushroom = true;
-		m_posMushroom = rand() % m_MAX_MAP;
+		m_mushroomPos = rand() % m_MAX_MAP;
 	}
-	else
-	{
-		m_mushroomTime -= 50;
-	}
+	else { m_mushroomTime -= 50; }
 }
 
 void World::createDrop()
 {
 	if (rand() % 10 == 0)
 	{
+		// Buscaremos una posicion en la que no haya ya una gota
 		bool usedValue = true;
-		int pos = 0;
+		unsigned int pos = 0;
 		while (usedValue)
 		{
 			usedValue = false;
@@ -264,7 +276,7 @@ void World::createDrop()
 				if ((*it)->m_pos == pos && !usedValue) { usedValue = true; }
 			}
 		}
-		Drop* d = new Drop(pos);
+		Drop* d = new Drop(pos, m_dropTimeToFall);
 		m_drops.push_back(d);
 	}
 }
@@ -275,18 +287,22 @@ void World::updateDrops()
 	while (it != m_drops.end())
 	{
 		(*it)->update();
-		if ((*it)->m_timer < 0) { it = m_drops.erase(it); }
-		else                    { it++; }
+		if ((*it)->m_timer == 0)
+		{ 
+			delete *it;
+			it = m_drops.erase(it); 
+		}
+		else { it++; }
 	}
 }
 
 void World::printWorld()
 {
-	for (int i = 0; i < m_MAX_MAP; i++)
+	for (size_t i = 0; i < m_MAX_MAP; i++)
 	{
 		// Los enemigos se mostraran por encima del champiñon y las gotas
 		if      (m_map[i] != nullptr)                   { m_map[i]->printObject(); }
-		else if (m_showMushroom && i == m_posMushroom)  { m_mushroomP->printObject(); }
+		else if (m_showMushroom && i == m_mushroomPos)  { m_mushroomP->printObject(); }
 		else
 		{
 			bool gota = false;
@@ -306,11 +322,13 @@ void World::printWorld()
 
 void World::deleteWorld()
 {
-	for (int i = 0; i < m_MAX_MAP; i++)
+	for (size_t i = 0; i < m_MAX_MAP; i++)
 	{
-		if (m_map[i] != nullptr)
-		{
-			delete m_map[i];
-		}
+		if (m_map[i] != nullptr) { delete m_map[i]; }
 	}
+	for (size_t i = 0; i < m_drops.size(); i++)
+	{
+		delete m_drops[i];
+	}
+	delete m_mushroomP;
 }
